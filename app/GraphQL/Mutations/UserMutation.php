@@ -2,13 +2,12 @@
 
 namespace App\GraphQL\Mutations;
 
-use CLosure;
 use App\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Rebing\GraphQL\Support\Facades\GraphQL;
-use GraphQL\Type\Definition\Type;
+use CLosure;
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
+use Illuminate\Support\Facades\Auth;
+use Rebing\GraphQL\Support\Facades\GraphQL;
 use Rebing\GraphQL\Support\Mutation;
 
 class UserMutation extends Mutation
@@ -31,25 +30,24 @@ class UserMutation extends Mutation
         ];
     }
 
-    protected function rules(array $args = []): array
-    {
-        return [
-            'name' => ['required','unique:users,name'],
-            'email' => ['required', 'email']
-        ];
-    }
-
-
     public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
         if (Auth::user()->is_admin) {
             $user = User::Create($args);
-            if(!$user) {
+            if (!$user) {
                 return null;
             }
             return $user;
         }
         return null;
 
+    }
+
+    protected function rules(array $args = []): array
+    {
+        return [
+            'name' => ['required', 'unique:users,name'],
+            'email' => ['required', 'email']
+        ];
     }
 }

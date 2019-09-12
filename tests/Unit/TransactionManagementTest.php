@@ -3,7 +3,6 @@
 namespace Tests\Unit;
 
 use App\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
@@ -15,22 +14,35 @@ class TransactionManagementTest extends TestCase
     {
         $this->userLogin();
 
-        for($i=0;$i<5;$i++){
-            $amount = rand(1,99);
-            $response = $this->graphql("mutation Transaction{TransactionMutation(user_id:3,amount:".$amount.",type:\"DEBIT\"){id,amount,type,user_id}}");
+        for ($i = 0; $i < 5; $i++) {
+            $amount = rand(1, 99);
+            $response = $this->graphql("mutation Transaction{TransactionMutation(user_id:3,amount:" . $amount . ",type:\"DEBIT\"){id,amount,type,user_id}}");
             $this->assertEquals(200, $response->getStatusCode());
 
         }
 
     }
 
+    private function userLogin()
+    {
+        $user_id = User::where('is_admin', 0)->orderBy('id', 'desc')->first()->id;
+        Auth::loginUsingId($user_id);
+    }
+
+    public function graphql(string $query)
+    {
+        return $this->post('/graphql', [
+            'query' => $query
+        ]);
+    }
+
     /** @test */
     public function a_credit_transaction_can_be_added_by_the_user()
     {
         $this->userLogin();
-        for($i=0;$i<5;$i++){
-            $amount = rand(1,99);
-            $response = $this->graphql("mutation Transaction{TransactionMutation(user_id:3,amount:".$amount.",type:\"CREDIT\"){id,amount,type,user_id}}");
+        for ($i = 0; $i < 5; $i++) {
+            $amount = rand(1, 99);
+            $response = $this->graphql("mutation Transaction{TransactionMutation(user_id:3,amount:" . $amount . ",type:\"CREDIT\"){id,amount,type,user_id}}");
             $this->assertEquals(200, $response->getStatusCode());
 
         }
@@ -96,7 +108,6 @@ class TransactionManagementTest extends TestCase
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-
     /** @test */
     public function get_user_transactions_only_by_admin()
     {
@@ -117,22 +128,10 @@ class TransactionManagementTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-
-    private function userLogin(){
-        $user_id = User::where('is_admin',0)->orderBy('id','desc')->first()->id;
-        Auth::loginUsingId($user_id);
-    }
-
-    private function adminLogin(){
-        $user_id = User::where('is_admin',1)->orderBy('id','desc')->first()->id;
-        Auth::loginUsingId($user_id);
-    }
-
-    public function graphql(string $query)
+    private function adminLogin()
     {
-        return $this->post('/graphql', [
-            'query' => $query
-        ]);
+        $user_id = User::where('is_admin', 1)->orderBy('id', 'desc')->first()->id;
+        Auth::loginUsingId($user_id);
     }
 
 

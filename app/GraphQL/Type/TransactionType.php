@@ -1,5 +1,7 @@
 <?php
+
 namespace App\GraphQL\Type;
+
 use App\Transaction;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Type as GraphQLType;
@@ -7,9 +9,9 @@ use Rebing\GraphQL\Support\Type as GraphQLType;
 class TransactionType extends GraphQLType
 {
     protected $attributes = [
-        'name'          => 'Transaction',
-        'description'   => 'Transaction of Users',
-        'model'         => Transaction::class,
+        'name' => 'Transaction',
+        'description' => 'Transaction of Users',
+        'model' => Transaction::class,
     ];
 
     public function fields(): array

@@ -18,16 +18,29 @@ class UserManagementTest extends TestCase
     {
         $this->assertTrue(true);
     }
+
     /** @test */
     public function a_user_can_be_added_by_the_admin()
     {
 
         $this->adminLogin(1);
         $faker = Factory::create();
-        $name  = "".$faker->name."";
-        $email = "".$faker->email."";
+        $name =  $faker->name;
+        $email = $faker->email;
         $response = $this->graphql("mutation users{UserMutation(name:\"$name\",email:\"$email\"){id,name,email}}");
         $this->assertEquals(200, $response->getStatusCode());
+    }
+
+    private function adminLogin($id)
+    {
+        Auth::loginUsingId($id);
+    }
+
+    public function graphql(string $query)
+    {
+        return $this->post('/graphql', [
+            'query' => $query
+        ]);
     }
 
     /** @test */
@@ -42,6 +55,11 @@ class UserManagementTest extends TestCase
             "validation",
             $response->json('errors')[0]["message"]
         );
+    }
+
+    private function getExistingName()
+    {
+        return User::where('is_admin', 0)->first()->name;
     }
 
     /** @test */
@@ -64,27 +82,10 @@ class UserManagementTest extends TestCase
 
         $this->adminLogin(2);
         $faker = Factory::create();
-        $name  = $faker->name;
+        $name = $faker->name;
         $email = $faker->email;
         $response = $this->graphql("mutation users{UserMutation(name:\"$name\",email:\"$email\"){id,name,email}}");
         $this->assertEquals(null, $response->json('data')['UserMutation']);
-    }
-
-    private function adminLogin($id)
-    {
-        Auth::loginUsingId($id);
-    }
-
-    private function getExistingName()
-    {
-        return User::where('is_admin',0)->first()->name;
-    }
-
-    public function graphql(string $query)
-    {
-        return $this->post('/graphql', [
-            'query' => $query
-        ]);
     }
 
 }

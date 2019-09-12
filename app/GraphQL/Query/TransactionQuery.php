@@ -1,12 +1,13 @@
 <?php
+
 namespace App\GraphQL\Query;
 
-use Closure;
 use App\User;
-use Illuminate\Support\Facades\Auth;
-use Rebing\GraphQL\Support\Facades\GraphQL;
+use Closure;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Illuminate\Support\Facades\Auth;
+use Rebing\GraphQL\Support\Facades\GraphQL;
 use Rebing\GraphQL\Support\Query;
 
 class TransactionQuery extends Query
@@ -35,7 +36,7 @@ class TransactionQuery extends Query
 
     public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
-        if(Auth::user()->is_admin){
+        if (Auth::user()->is_admin) {
             $users = User::with(['transactions' => function ($query) {
                 $query->sum('amount');
             }])->orderByDesc('id')
@@ -43,11 +44,11 @@ class TransactionQuery extends Query
 
             $data = [];
 
-            foreach ($users as $key=>$user){
-                $data[$key]['id']= $user->id;
-                $data[$key]['name']= $user->name;
-                $data[$key]['email']= $user->email;
-                $data[$key]['total_debit_amount']= $user->transactions->where('type','DEBIT')->sum('amount');
+            foreach ($users as $key => $user) {
+                $data[$key]['id'] = $user->id;
+                $data[$key]['name'] = $user->name;
+                $data[$key]['email'] = $user->email;
+                $data[$key]['total_debit_amount'] = $user->transactions->where('type', 'DEBIT')->sum('amount');
             }
 
             return $data;

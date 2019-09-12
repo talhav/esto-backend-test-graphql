@@ -4,11 +4,10 @@ namespace App\GraphQL\Mutations;
 
 use App\Transaction;
 use CLosure;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Rebing\GraphQL\Support\Facades\GraphQL;
-use GraphQL\Type\Definition\Type;
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
+use Illuminate\Support\Facades\Auth;
+use Rebing\GraphQL\Support\Facades\GraphQL;
 use Rebing\GraphQL\Support\Mutation;
 
 class TransactionMutation extends Mutation
@@ -32,23 +31,23 @@ class TransactionMutation extends Mutation
         ];
     }
 
+    public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
+    {
+        if (!Auth::user()->is_admin) {
+            $transaction = Transaction::Create($args);
+            if (!$transaction) {
+                return null;
+            }
+            return $transaction;
+        }
+
+    }
+
     protected function rules(array $args = []): array
     {
         return [
             'type' => 'required|in:DEBIT,CREDIT',
             'amount' => 'required|numeric|min:0|not_in:0',
         ];
-    }
-
-    public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
-    {
-        if(!Auth::user()->is_admin){
-            $transaction = Transaction::Create($args);
-            if(!$transaction) {
-                return null;
-            }
-            return $transaction;
-        }
-
     }
 }
