@@ -3,7 +3,9 @@ ESTO Backend Test with GraphQL
 
 # Step By Step
 
-create DB
+create DB                                     // (esto-backend-test.sql on root)
+
+Setup ENV
 
 php artisan migrate                            // (Migrate Tables)
 
