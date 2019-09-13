@@ -32,6 +32,11 @@ class UsersQuery extends Query
 
     public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
+        /*
+          Middleware for check role having problems for different endpoints
+         so making the admin / user check here
+         */
+
         if (Auth::user()->is_admin) {
             if (isset($args['id'])) {
                 return User::where('id', $args['id'])->get();

@@ -33,6 +33,11 @@ class TransactionMutation extends Mutation
 
     public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
+        /*
+         Middleware for check role having problems for different endpoints
+        so making the admin / user check here
+        */
+
         if (!Auth::user()->is_admin) {
             $transaction = Transaction::Create($args);
             if (!$transaction) {
@@ -42,6 +47,10 @@ class TransactionMutation extends Mutation
         }
 
     }
+
+    /*
+     * Validation Rules
+     * */
 
     protected function rules(array $args = []): array
     {

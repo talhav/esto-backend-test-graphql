@@ -36,6 +36,11 @@ class TransactionQuery extends Query
 
     public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
+        /*
+          Middleware for check role having problems for different endpoints
+         so making the admin / user check here
+         */
+
         if (Auth::user()->is_admin) {
             $users = User::with(['transactions' => function ($query) {
                 $query->sum('amount');

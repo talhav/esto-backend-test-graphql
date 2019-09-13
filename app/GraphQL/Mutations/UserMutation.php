@@ -24,7 +24,6 @@ class UserMutation extends Mutation
     public function args(): array
     {
         return [
-            //'id' => ['name' => 'id', 'type' => Type::string()],
             'name' => ['name' => 'name', 'type' => Type::string()],
             'email' => ['name' => 'email', 'type' => Type::string()],
         ];
@@ -32,6 +31,11 @@ class UserMutation extends Mutation
 
     public function resolve($root, $args, $context, ResolveInfo $resolveInfo, Closure $getSelectFields)
     {
+        /*
+          Middleware for check role having problems for different endpoints
+         so making the admin / user check here
+         */
+
         if (Auth::user()->is_admin) {
             $user = User::Create($args);
             if (!$user) {
@@ -42,6 +46,10 @@ class UserMutation extends Mutation
         return null;
 
     }
+
+    /*
+    * Validation Rules
+    * */
 
     protected function rules(array $args = []): array
     {
